@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 // GraphQL
-import schema from './schema.js';
+import schema from '../schema/schema.js';
 import { graphql } from 'graphql';
 
 const app = express();
