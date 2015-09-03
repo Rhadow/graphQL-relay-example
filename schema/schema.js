@@ -1,3 +1,4 @@
+// GraphQL
 import {
 	GraphQLObjectType,
 	GraphQLSchema,
@@ -7,38 +8,35 @@ import {
 	GraphQLNonNull
 } from 'graphql';
 
-import PokemonType from './pokemonType.js';
+// Custom Types
+import UserType from './UserType.js';
 
-import PokemonList from '../FakeData/pokemon.js';
-
-let count = 0;
+// Mongoose schema
+import User from './UserModel.js';
 
 const schema = new GraphQLSchema({
 	query: new GraphQLObjectType({
 		name: 'RootQueryType',
 		fields: {
-			count: {
-				type: GraphQLInt,
-				description: 'The count!',
+			users: {
+				type: new GraphQLList(UserType),
+				descriptions: 'All users info',
 				resolve: () => {
-					return count;
+					return User.find();
 				}
 			},
-			pokemonList: {
-				type: new GraphQLList(PokemonType),
-				description: 'Pokemon list',
-				resolve: () => PokemonList
-			},
-			pokemon: {
-				type: PokemonType,
-				description: 'A pokemon',
+			user: {
+				type: UserType,
+				descriptions: 'User info by name',
 				args: {
 					name: {
 						type: new GraphQLNonNull(GraphQLString)
 					}
 				},
 				resolve: (root, { name }) => {
-					return PokemonList.filter((pokemon) => pokemon.name === name)[0];
+					return User.findOne({
+						'name': name
+					});
 				}
 			}
 		}
@@ -46,41 +44,29 @@ const schema = new GraphQLSchema({
 	mutation: new GraphQLObjectType({
 		name: 'RootMutationType',
 		fields: {
-			updateCount: {
-				type: GraphQLInt,
-				description: 'Update the count',
-				resolve: () => {
-					return count++;
-				}
-			},
-			addPokemon: {
-				type: PokemonType,
-				description: 'Add a new pokemon to list',
+			addUser: {
+				type: UserType,
+				description: 'Add a new user to list',
 				args: {
 					name: {
 						type: new GraphQLNonNull(GraphQLString),
-						description: 'New pokemon\'s name'
+						description: 'New user\'s name'
 					},
-					stage: {
+					age: {
 						type: new GraphQLNonNull(GraphQLInt),
-						description: 'New pokemon\s level'
+						description: 'New user\s age'
+					},
+					friends: {
+						type: new GraphQLNonNull(new GraphQLList(GraphQLInt)),
+						description: 'New user\s age'
 					}
 				},
-				resolve: (root, args) => {
-					PokemonList.push(args);
-					return args;
-				}
-			},
-			removePokemon: {
-				type: new GraphQLList(PokemonType),
-				description: 'Remove a pokemon by name',
-				args: {
-					name: {
-						type: new GraphQLNonNull(GraphQLString)
-					}
-				},
-				resolve: (root, { name }) => {
-					return PokemonList.filter((pokemon) => pokemon.name !== name);
+				resolve: (root, { name, age, friends }) => {
+					let newUser = new User();
+					newUser.name = name;
+					newUser.age = age;
+					newUser.friends = friends;
+					return newUser.save();
 				}
 			}
 		}
