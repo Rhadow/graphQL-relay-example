@@ -1,88 +1,29 @@
+// GraphQL
 import {
 	GraphQLObjectType,
-	GraphQLSchema,
-	GraphQLInt,
-	GraphQLString,
-	GraphQLList,
-	GraphQLNonNull
+	GraphQLSchema
 } from 'graphql';
 
-import PokemonType from './pokemonType.js';
-
-import PokemonList from '../FakeData/pokemon.js';
-
-let count = 0;
+// Query & Mutations
+import UserQuery from '../models/User/UserQuery.js';
+import UserMutation from '../models/User/UserMutation.js';
+import ProductQuery from '../models/Product/ProductQuery.js';
 
 const schema = new GraphQLSchema({
 	query: new GraphQLObjectType({
 		name: 'RootQueryType',
 		fields: {
-			count: {
-				type: GraphQLInt,
-				description: 'The count!',
-				resolve: () => {
-					return count;
-				}
-			},
-			pokemonList: {
-				type: new GraphQLList(PokemonType),
-				description: 'Pokemon list',
-				resolve: () => PokemonList
-			},
-			pokemon: {
-				type: PokemonType,
-				description: 'A pokemon',
-				args: {
-					name: {
-						type: new GraphQLNonNull(GraphQLString)
-					}
-				},
-				resolve: (root, { name }) => {
-					return PokemonList.filter((pokemon) => pokemon.name === name)[0];
-				}
-			}
+			users: UserQuery.users,
+			user: UserQuery.user,
+			products: ProductQuery.products,
+			product: ProductQuery.product
 		}
 	}),
 	mutation: new GraphQLObjectType({
 		name: 'RootMutationType',
 		fields: {
-			updateCount: {
-				type: GraphQLInt,
-				description: 'Update the count',
-				resolve: () => {
-					return count++;
-				}
-			},
-			addPokemon: {
-				type: PokemonType,
-				description: 'Add a new pokemon to list',
-				args: {
-					name: {
-						type: new GraphQLNonNull(GraphQLString),
-						description: 'New pokemon\'s name'
-					},
-					stage: {
-						type: new GraphQLNonNull(GraphQLInt),
-						description: 'New pokemon\s level'
-					}
-				},
-				resolve: (root, args) => {
-					PokemonList.push(args);
-					return args;
-				}
-			},
-			removePokemon: {
-				type: new GraphQLList(PokemonType),
-				description: 'Remove a pokemon by name',
-				args: {
-					name: {
-						type: new GraphQLNonNull(GraphQLString)
-					}
-				},
-				resolve: (root, { name }) => {
-					return PokemonList.filter((pokemon) => pokemon.name !== name);
-				}
-			}
+			addUser: UserMutation.addUser,
+			deleteUser: UserMutation.deleteUser
 		}
 	})
 });
