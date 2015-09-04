@@ -13,7 +13,7 @@ let UserQuery = {
 		type: new GraphQLList(UserType),
 		descriptions: 'All users info',
 		resolve: () => {
-			return User.find();
+			return new User().getDenormalizedUsers();
 		}
 	},
 	user: {
@@ -25,7 +25,7 @@ let UserQuery = {
 			}
 		},
 		resolve: (root, { id }) => {
-			return User.findById(id);
+			return new User().getDenormalizedUserById(id);
 		}
 	}
 };

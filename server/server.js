@@ -13,6 +13,7 @@ const app = express();
 const PORT = 3000;
 const DB_PATH = 'mongodb://localhost:27017/test';
 
+// Connet to DB
 mongoose.connect(DB_PATH);
 
 app.use(bodyParser.text({
