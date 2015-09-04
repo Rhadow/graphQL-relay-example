@@ -1,74 +1,29 @@
 // GraphQL
 import {
 	GraphQLObjectType,
-	GraphQLSchema,
-	GraphQLInt,
-	GraphQLString,
-	GraphQLList,
-	GraphQLNonNull
+	GraphQLSchema
 } from 'graphql';
 
-// Custom Types
-import UserType from './UserType.js';
-
-// Mongoose schema
-import User from './UserModel.js';
+// Query & Mutations
+import UserQuery from '../models/User/UserQuery.js';
+import UserMutation from '../models/User/UserMutation.js';
+import ProductQuery from '../models/Product/ProductQuery.js';
 
 const schema = new GraphQLSchema({
 	query: new GraphQLObjectType({
 		name: 'RootQueryType',
 		fields: {
-			users: {
-				type: new GraphQLList(UserType),
-				descriptions: 'All users info',
-				resolve: () => {
-					return User.find();
-				}
-			},
-			user: {
-				type: UserType,
-				descriptions: 'User info by name',
-				args: {
-					name: {
-						type: new GraphQLNonNull(GraphQLString)
-					}
-				},
-				resolve: (root, { name }) => {
-					return User.findOne({
-						'name': name
-					});
-				}
-			}
+			users: UserQuery.users,
+			user: UserQuery.user,
+			products: ProductQuery.products,
+			product: ProductQuery.product
 		}
 	}),
 	mutation: new GraphQLObjectType({
 		name: 'RootMutationType',
 		fields: {
-			addUser: {
-				type: UserType,
-				description: 'Add a new user to list',
-				args: {
-					name: {
-						type: new GraphQLNonNull(GraphQLString),
-						description: 'New user\'s name'
-					},
-					age: {
-						type: new GraphQLNonNull(GraphQLInt),
-						description: 'New user\s age'
-					},
-					friends: {
-						type: new GraphQLNonNull(new GraphQLList(GraphQLInt)),
-						description: 'New user\s age'
-					}
-				},
-				resolve: (root, { name, age, friends }) => {
-					let newUser = new User();
-					newUser.name = name;
-					newUser.age = age;
-					newUser.friends = friends;
-					return newUser.save();
-				}
-			}
+			addUser: UserMutation.addUser,
+			deleteUser: UserMutation.deleteUser
 		}
 	})
 });

@@ -2,13 +2,20 @@ import {
 	GraphQLObjectType,
 	GraphQLList,
 	GraphQLString,
-	GraphQLInt
+	GraphQLInt,
+	GraphQLID
 } from 'graphql';
+
+import ProductType from '../Product/ProductType.js';
 
 let UserType = new GraphQLObjectType({
 	name: 'User',
 	description: 'A user',
 	fields: () => ({
+		_id: {
+			type: GraphQLID,
+			description: 'user id'
+		},
 		name: {
 			type: GraphQLString,
 			description: 'user name'
@@ -17,9 +24,9 @@ let UserType = new GraphQLObjectType({
 			type: GraphQLInt,
 			description: 'user age'
 		},
-		friends: {
-			type: new GraphQLList(UserType),
-			description: 'Lists of user\'s friend'
+		shoppingList: {
+			type: new GraphQLList(ProductType),
+			description: 'List of products that user bought'
 		}
 	})
 });
